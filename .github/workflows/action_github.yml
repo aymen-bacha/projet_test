@@ -31,5 +31,5 @@ jobs:
           git config user.email "actions@github.com"
           git add gitops/job_dbt.yml
           git commit -m "Update DBT Job commit hash to $COMMIT_HASH" || echo "No changes to commit"
-          git push
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
 
