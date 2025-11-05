@@ -1,27 +1,46 @@
-name: Mise a jour de DBT Job Manifest
+name: Auto-update DBT Job Manifest
 
 on:
   push:
     branches:
       - main
+    paths:
+      - "models/**"
+      - "seeds/**"
+      - "macros/**"
+      - "dbt_project.yml"
+
+permissions:
+  contents: write  # Permet au bot de push dans le repo
 
 jobs:
   update-job:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout DBT repository
-        uses: actions/checkout@v3
+      # 1️⃣ Checkout du repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # 2️⃣ Récupérer le hash du dernier commit
       - name: Get latest commit hash
         run: echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
 
+      # 3️⃣ Mettre à jour uniquement l'annotation commit-hash dans le manifest
       - name: Update Job annotation
         run: |
-          sed -i "s/commit-hash: \".*\"/commit-hash: \"$COMMIT_HASH\"/" gitops/job_dbt.yml
+          FILE="gitops/job_dbt.yml"
+          # Vérifie si l'annotation existe
+          if grep -q "commit-hash:" "$FILE"; then
+            sed -i "s/commit-hash: \".*\"/commit-hash: \"$COMMIT_HASH\"/" "$FILE"
+          else
+            # Si elle n'existe pas, ajoute-la sous metadata
+            sed -i "/metadata:/a \  annotations:\n    commit-hash: \"$COMMIT_HASH\"" "$FILE"
+          fi
 
+      # 4️⃣ Commit & push les modifications
       - name: Commit and push changes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
