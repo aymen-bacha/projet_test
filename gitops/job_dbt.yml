@@ -4,7 +4,7 @@ metadata:
   name: dbt-job
   namespace: dbt
   annotations:
-    commit-hash: "bf05e6fb1c9a436b303f0dfc6445ed0c459f215b"
+    commit-hash: "3cf82c89ecb4bd3437a7b79133ff3da3873bd1e4"
 spec:
   template:
     spec:
