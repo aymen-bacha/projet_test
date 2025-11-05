@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: dbt-job
+  namespace: dbt
 spec:
   template:
     spec:
@@ -11,17 +12,16 @@ spec:
           secret:
             secretName: dbt-secret
         - name: projet-dbt
-          hostPath:
-            path: /home/bacha/test_kubernetes/mini/dbt/projet_test/gitops
-            type: Directory
+          emptyDir: {}   # Remplace hostPath par emptyDir
       containers:
         - name: dbt
           image: dbt-core-postgres:1.8.10
           command: ["/bin/sh", "-c"]
           args:
             - |
+              echo " exécution DBT"
+              mkdir -p /projet-dbt
               git clone https://github.com/aymen-bacha/projet_test.git /projet-dbt
-              echo " Exécution DBT"
               cd /projet-dbt
               dbt deps
               dbt run --profiles-dir /root/.dbt
@@ -31,4 +31,3 @@ spec:
               mountPath: /root/.dbt
             - name: projet-dbt
               mountPath: /projet-dbt
-
