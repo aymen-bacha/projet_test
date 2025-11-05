@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dbt-job
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      volumes:
+        - name: dbt-secret
+          secret:
+            secretName: dbt-secret
+        - name: projet-dbt
+          hostPath:
+            path: /home/bacha/test_kubernetes/mini/dbt/projet_test/gitops
+            type: Directory
+      containers:
+        - name: dbt
+          image: dbt-core-postgres:1.8.10
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo " Exécution DBT"
+              cd /projet-dbt
+              dbt deps
+              dbt run --profiles-dir /root/.dbt
+              echo " DBT terminé"
+          volumeMounts:
+            - name: dbt-secret
+              mountPath: /root/.dbt
+            - name: projet-dbt
+              mountPath: /projet-dbt
+
