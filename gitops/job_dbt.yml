@@ -3,6 +3,8 @@ kind: Job
 metadata:
   name: dbt-job
   namespace: dbt
+  annotations:
+    commit-hash: "initial"
 spec:
   template:
     spec:

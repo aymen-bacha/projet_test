@@ -1,0 +1,35 @@
+name: Mise a jour de DBT Job Manifest
+
+on:
+  push:
+    branches:
+      - main   # Déclenche le workflow à chaque push sur main
+
+jobs:
+  update-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout du repo DBT 
+      - name: Checkout DBT repository
+        uses: actions/checkout@v3
+
+      # Récupérer le hash du dernier commit
+      - name: Get latest commit hash
+        id: vars
+        run: echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+
+         # Mettre à jour le job-dbt.yml avec le nouveau hash
+      - name: Update Job annotation
+        run: |
+          sed -i "s/commit-hash: \".*\"/commit-hash: \"$COMMIT_HASH\"/" gitops/job-dbt.yml
+
+      # Commit & push dans le même repo
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add gitops/job-dbt.yml
+          git commit -m "Update DBT Job commit hash to $COMMIT_HASH" || echo "No changes to commit"
+          git push
+
