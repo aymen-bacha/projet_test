@@ -5,6 +5,7 @@ metadata:
   namespace: dbt
   annotations:
     commit-hash: "24715c14e3a7206821a603093aeec3854181e0d1"
+    argocd.argoproj.io/hook: PostSync
 spec:
   template:
     spec:
