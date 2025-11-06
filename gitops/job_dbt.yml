@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: dbt-job
+  name: dbt-job-{{ .Values.gitCommit }}
   namespace: dbt
   annotations:
     commit-hash: "24715c14e3a7206821a603093aeec3854181e0d1"
