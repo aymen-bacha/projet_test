@@ -1,10 +1,10 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: dbt-job
+  name: dbt-job-0be18c3
   namespace: dbt
   annotations:
-    commit-hash: "1e5fd5b7ee2390965f75af43a00059c9ea5f70f7"
+    commit-hash: "0be18c3"
       # argocd.argoproj.io/hook: PostSync
 spec:
   template:
