@@ -4,7 +4,7 @@ metadata:
   name: dbt-job
   namespace: dbt
   annotations:
-    commit-hash: "12978ec74e68a2fe7fc474b511a7f119a72a67e2"
+    commit-hash: "1e5fd5b7ee2390965f75af43a00059c9ea5f70f7"
       # argocd.argoproj.io/hook: PostSync
 spec:
   template:
