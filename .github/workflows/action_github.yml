@@ -26,19 +26,22 @@ jobs:
 
       # 2️⃣ Récupérer le hash du dernier commit
       - name: Get latest commit hash
-        run: echo "COMMIT_HASH=$(git rev-parse HEAD)" >> $GITHUB_ENV
+        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
-      # 3️⃣ Mettre à jour uniquement l'annotation commit-hash dans le manifest
-      - name: Update Job annotation
+      # 3️⃣ Mettre à jour l’annotation ET le nom du Job
+      - name: Update Job annotation and name
         run: |
           FILE="gitops/job_dbt.yml"
-          # Vérifie si l'annotation existe
+          
+          # ✅ Met à jour ou ajoute l'annotation commit-hash
           if grep -q "commit-hash:" "$FILE"; then
             sed -i "s/commit-hash: \".*\"/commit-hash: \"$COMMIT_HASH\"/" "$FILE"
           else
-            # Si elle n'existe pas, ajoute-la sous metadata
             sed -i "/metadata:/a \  annotations:\n    commit-hash: \"$COMMIT_HASH\"" "$FILE"
           fi
+          
+          # ✅ Met à jour le nom du job pour forcer une nouvelle exécution
+          sed -i "s/^  name: dbt-job.*/  name: dbt-job-$COMMIT_HASH/" "$FILE"
 
       # 4️⃣ Commit & push les modifications
       - name: Commit and push changes
@@ -48,6 +51,6 @@ jobs:
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add gitops/job_dbt.yml
-          git commit -m "Update DBT Job commit hash to $COMMIT_HASH" || echo "No changes to commit"
+          git commit -m "Auto-update DBT job to commit $COMMIT_HASH" || echo "No changes to commit"
           git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git HEAD:main
 
